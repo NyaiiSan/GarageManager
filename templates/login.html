@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+
+        .edit-form {
+            max-width: 500px;
+
+            margin: 60px auto 120px;
+            padding-top: 30px;
+            padding-left: 50px;
+            padding-right: 50px;
+
+            border: 2px solid;
+            border-radius: 10px;
+        }
+
+        .infoLine {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin: 20px auto 20px;
+            
+            padding-top: 20px;
+            padding-bottom: 20px;
+
+        }
+
+        .infoText{
+            width: 300px;
+            height: 30px;
+
+            text-align: center;
+
+            margin-left: 50px;
+            padding: 5px;
+
+            border: 2px solid;
+            border-radius: 10px;
+        }
+
+        .infoText:focus{
+            /* border: none; */
+            outline: none;
+            background-color: #ccc;
+        }
+
+        .infoText:disabled{
+            /* background-color: #999; */
+            border-color: white;
+            background-color: #fff;
+            box-shadow: 1px 1px 2px 1px #aaaa;
+        }
+
+
+        #submit {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="mainBox">
+        <h1 id="title">登录</h1>
+        <div id="editForm" class="edit-form">
+            <form style="width: 100%;" method="post">
+                <div class="infoLine">
+                    <label for="name">用户名：</label>
+                    <input class="infoText" type="text" name="username">
+                </div>
+                <div class="infoLine">
+                    <label for="plate">密码：</label>
+                    <input class="infoText" type="password" name="password">
+                </div>
+                <button id="submit" type="button" onclick="login()">登录</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var url = "/login";
+        function login(){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if(xhr.status == 200){
+                        window.location.href = "/user";
+                    }
+                    else{
+                        alert(xhr.responseText);
+                    }
+                }
+            };
+            // 获取用户名和密码
+            var username = document.getElementsByName("username")[0].value;
+            var password = document.getElementsByName("password")[0].value;
+
+            // XHM
+            var data = JSON.stringify({
+                "username": username,
+                "password": password
+            });
+            xhr.send(data);
+        }
+    </script>
+
+</body>
+</html>

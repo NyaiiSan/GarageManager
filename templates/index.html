@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.6">
+    <title>智能车库管理系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+
+        .descriptions{
+            margin: 60px 50px 10px;
+       }
+
+        .description {
+            text-align: left;
+            /* text-indent:30px; */
+            letter-spacing:3px;
+            font-size: 20px;
+            text-overflow: ellipsis;
+            margin: 10px 50px 10px;
+        }
+
+        #main-img{
+            width: 80%;
+            height: 400px;
+            margin: 30px 50px 30px;
+
+            border-radius: 40px;
+        }
+
+        #start_but{
+            display:inline-flex;
+
+            background-color: white;
+
+            color: burlywood;
+            font-size: 30px;
+            letter-spacing:3px;
+
+            margin: 30px auto 30px;
+            padding: 10px 30px 10px;
+
+            border-radius: 10px;
+            box-shadow: 4px 4px 11px 0px #aaa9;
+
+            transition:
+                background-color 0.5s;
+        }
+
+        #start_but:hover{
+            background-color: #ccc;
+        }
+
+        #features {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            align-content: stretch;
+            justify-content: space-between;
+
+            /* display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            align-content: space-around;
+            justify-content: space-around; */
+
+            padding-top: 30px;
+            padding-bottom: 30px;
+
+            margin: 0px 80px 0px;
+
+            box-sizing: border-box;
+        }
+
+        .feature {
+            flex-grow: 1;
+            flex-basis: 40%;
+            max-width: 50%;
+
+            text-align: left;
+            letter-spacing: 2px;
+
+            padding: 20px 10px 10px 20px;
+            margin: 10px 2px 10px;
+
+            border-radius: 30px;
+
+            transition:
+                background-color 0.5s;
+        }
+
+        .feature:hover {
+            background-color: #eee;
+        }
+        
+        .feature h3{
+            font-size: 22px;
+            padding-bottom: 10px;
+        }
+
+        .feature p{
+            font-size: 18px;
+        }
+
+        .funBox{
+            width: 300px;
+            height: 400px;
+
+            background-color: #6cf;
+            margin: 20px;
+            padding: 20px;
+
+            border-radius: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="bg"></div>
+
+    <div id="top_label">
+        <div class="top_side">
+            <a class="top_fun" href="/">主页</a>
+            <a class="top_fun" href="">车库状态</a>
+            <a class="top_fun" href="/user">我的信息</a>
+            <a class="top_fun" href="">我的钱包</a>
+        </div>
+        <div class="top_side">
+            {% if user.name == 'guest' %}
+            <a class="top_fun" href="/login">登录</a>
+            <a class="top_fun" href="javascript: alert('请联系管理员完成注册');">注册</a>
+            {% else %}
+            <a class="top_fun" href="/login">{{ user.name }}</a>
+            <a class="top_fun" href="/logout">注销</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="mainBox">
+
+        <h1 id="title">智能车库管理系统</h1>
+
+        <div class="descriptions">
+            <p class="description">
+                智能车库管理系统的设计与实现是为了应对现代城市化进程中车辆管理的复杂性、效率性以及安全性问题。
+            </p>
+            <p class="description">
+                随着社会的发展和经济的增长，汽车已成为人们生活中不可或缺的一部分，导致城市车辆数量急剧增加，传统的车库管理方式已经无法满足现代社会的需求。
+            </p>
+            <p class="description">
+                因此，一个智能车库管理系统显得尤为重要和迫切。
+            </p>
+        </div>
+
+        <div>
+            <img id="main-img" src="/static/img/Car.png" alt="">
+        </div>
+        
+        <hr>
+
+        <a id="start_but" href="#">开始体验</a>
+
+        <hr>
+
+        <div id="features">
+            <dev class="feature">
+                <h3>技术进步</h3>
+                <p>智能车库管理系统的核心在于其集成的高科技，如人工智能、物联网（IoT）、大数据分析和云计算等。这些技术使得系统能够进行实时的数据收集和分析，从而实现智能决策和自动化操作。</p>
+            </dev>
+            <dev class="feature">
+                <h3>市场需求</h3>
+                <p>
+                    全球城市化和私家车增长导致停车需求显著增加，特别是在人口密集的城市中。智能车库管理系统通过提高停车场的运营效率和车位使用率，能够显著缓解停车难的问题。此外，随着消费者对便捷性和服务质量要求的提高 
+                </p>
+            </dev>
+            <dev class="feature">
+                <h3>政策导向</h3>
+                <p>
+                    各级政府越来越意识到智慧城市建设对于提高城市管理效率、促进可持续发展的重要性。智能车库管理系统作为智慧城市的重要组成部分
+                </p>
+            </dev>
+            <dev class="feature">
+                <h3>环保需求</h3>
+                <p>
+                    环保和可持续发展已成为全球共识。智能车库管理系统通过减少车辆在寻找停车位时的无效循环和等待，可以有效降低汽车尾气排放，减少环境污染。此外，智能车库还可以采用绿色建筑材料
+                </p>
+            </dev>
+        </div>
+
+    </div>
+</body>
+</html>

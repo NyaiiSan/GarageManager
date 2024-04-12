@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人信息</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+
+        .edit-form {
+            max-width: 600px;
+
+            margin: 60px auto 60px;
+            padding-left: 50px;
+            padding-right: 50px;
+
+            border: 2px solid;
+            border-radius: 10px;
+        }
+
+        .infoLine {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin: 20px auto 20px;
+            
+            padding-top: 20px;
+            padding-bottom: 20px;
+
+        }
+
+        .infoText{
+            width: 300px;
+            height: 30px;
+
+            text-align: center;
+
+            margin-left: 50px;
+            padding: 5px;
+
+            border: 2px solid;
+            border-radius: 10px;
+        }
+
+        .infoText:focus{
+            /* border: none; */
+            outline: none;
+            background-color: #ccc;
+        }
+
+        .infoText:disabled{
+            /* background-color: #999; */
+            border-color: white;
+            background-color: #fff;
+            box-shadow: 1px 1px 2px 1px #aaaa;
+        }
+
+
+        #submit {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="top_label">
+        <div class="top_side">
+            <a class="top_fun" href="/">主页</a>
+            <a class="top_fun" href="">车库状态</a>
+            <a class="top_fun" href="/user">我的信息</a>
+            <a class="top_fun" href="">我的钱包</a>
+        </div>
+        <div class="top_side">
+            {% if user.name == 'guest' %}
+            <a class="top_fun" href="/login">登录</a>
+            <a class="top_fun" href="javascript: alert('请联系管理员完成注册');">注册</a>
+            {% else %}
+            <a class="top_fun" href="/login">{{ user.name }}</a>
+            <a class="top_fun" href="/logout">注销</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="mainBox">
+        <h1 id="title">个人信息</h1>
+        <div class="edit-form">
+            <form style="width: 100%;">
+                <div class="infoLine">
+                    <label for="name">姓名：</label>
+                    <input class="infoText" type="text" id="name" name="name" value="{{ user.name }}" disabled>
+                </div>
+                <div class="infoLine">
+                    <label for="plate">车牌号：</label>
+                    <input class="infoText" type="text" id="plate" name="plate" value="{{ user.car }}" disabled>
+                </div>
+                <div class="infoLine">
+                    <label for="contact">联系方式：</label>
+                    <input class="infoText" type="text" id="contact" name="contact" value="{{ user.phone }}" disabled>
+                </div>
+                <input type="text" id="state" style="display: none;" value="show">
+                <button id="submit" type="button" onclick="editInfo()">更改</button>
+            </form>
+        </div>
+    </div>
+    <script>
+
+    
+        function editInfo(){
+            // 修改编辑框状态
+            edits = document.getElementsByClassName("infoText");
+            for(i=0; i<edits.length; i++){
+                edits[i].removeAttribute('disabled');
+            }
+
+            // 修改按钮状态
+            but = document.getElementById("submit");
+            but.innerHTML = "提交";
+            but.setAttribute('onclick', "showInfo()");
+        }
+
+        function showInfo(){
+            // 修改编辑框状态
+            edits = document.getElementsByClassName("infoText");
+            for(i=0; i<edits.length; i++){
+                edits[i].setAttribute('disabled', "");
+            }
+
+            // 修改按钮状态
+            but.innerHTML = "更改";
+            but.setAttribute('onclick', "editInfo()");
+        }
+        
+    </script>
+</body>
+</html>
