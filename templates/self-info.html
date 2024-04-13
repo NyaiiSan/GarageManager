@@ -98,7 +98,7 @@
                 </div>
                 <div class="infoLine">
                     <label for="contact">联系方式：</label>
-                    <input class="infoText" type="text" id="contact" name="contact" value="{{ user.phone }}" disabled>
+                    <input class="infoText" type="text" id="phonenum" name="phonenum" value="{{ user.phone }}" disabled>
                 </div>
                 <input type="text" id="state" style="display: none;" value="show">
                 <button id="submit" type="button" onclick="editInfo()">更改</button>
@@ -118,19 +118,52 @@
             // 修改按钮状态
             but = document.getElementById("submit");
             but.innerHTML = "提交";
-            but.setAttribute('onclick', "showInfo()");
+            but.setAttribute('onclick', "submitInfo()");
         }
 
-        function showInfo(){
-            // 修改编辑框状态
-            edits = document.getElementsByClassName("infoText");
-            for(i=0; i<edits.length; i++){
-                edits[i].setAttribute('disabled', "");
+        function submitInfo(){
+            // 提交修改后的信息
+            var username = document.getElementById("name").value;
+            var plate = document.getElementById("plate").value;
+            var phonenum = document.getElementById("phonenum").value;
+            // 检查信息是否正确
+            if (username == "" || plate == "" || phonenum == ""){
+                alert("填写的信息不能为空");
+                return ;
             }
+            // 向服务端发送信息
+            var url = "/user";
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if(xhr.status == 200){
+                        window.location.href = "/user";
+                    }
+                    else{
+                        alert(xhr.responseText);
+                    }
+                }
+            };
+            // XHMSend
+            var data = JSON.stringify({
+                "username": username,
+                "plate": plate,
+                "phonenum": phonenum
+            });
 
-            // 修改按钮状态
-            but.innerHTML = "更改";
-            but.setAttribute('onclick', "editInfo()");
+            xhr.send(data);
+
+            // // 修改编辑框状态
+            // edits = document.getElementsByClassName("infoText");
+            // for(i=0; i<edits.length; i++){
+            //     edits[i].setAttribute('disabled', "");
+            // }
+
+            // // 修改按钮状态
+            // but.innerHTML = "更改";
+            // but.setAttribute('onclick', "editInfo()");
         }
         
     </script>

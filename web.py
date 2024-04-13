@@ -8,8 +8,8 @@ app.secret_key = '1234567890'
 # 主页
 @app.route('/', methods = ['GET'])
 def index():
-    if 'username' in session:
-        user = db.get_user_byID(session['username'])
+    if 'userid' in session:
+        user = db.get_user_byID(session['userid'])
     else:
         user = {"name": "guest"}
 
@@ -19,11 +19,15 @@ def index():
 @app.route('/user', methods = ['GET', 'POST'])
 def user_info():
     # 判断用户是否登录
-    if 'username' in session:
-        # 用户已经登陆展示个人信息
-        # 从数据库中获取用户信息
-        user = db.get_user_byID((session['username']))
-        return render_template("self-info.html", user=user)
+    if 'userid' in session:
+        if request.method == "GET":
+            # 用户已经登陆展示个人信息
+            # 从数据库中获取用户信息
+            user = db.get_user_byID((session['userid']))
+            return render_template("self-info.html", user=user)
+        else: # post请求提交用户修改后的个人信息
+            db.chuser_info(session['userid'], request.json["username"], request.json["plate"], request.json["phonenum"])
+            return "ok"
     else:
         # 用户没有登陆，跳转到登陆页面
         return "<script> alert('请先登陆'); window.location.href='/login'; </script>"
@@ -33,16 +37,16 @@ def user_info():
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     # 判断用户是否已经登陆过
-    if 'username' in session:
+    if 'userid' in session:
         return redirect(url_for('user_info'))
 
     if request.method == "POST":
-        username = request.json['username']
+        username = request.json['userid']
         password = request.json['password']
         if username == "" or password == "" :
             return "用户名或密码不能为空", 400
         if db.check_user(username, password) == 1:
-            session['username'] = username
+            session['userid'] = username
             return "登陆成功", 200
         else:
             return "用户名或密码错误", 400
@@ -53,8 +57,8 @@ def login():
 @app.route('/logout', methods = ['GET', 'POST'])
 def logout():
     # 判断用户是否已经登陆过
-    if 'username' in session:
-        session.pop("username", None)
+    if 'userid' in session:
+        session.pop("userid", None)
         return "<script> alert('注销成功'); window.location.href='/'; </script>"
     else:
         return '<script>alert("未登录")</script>'

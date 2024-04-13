@@ -48,6 +48,14 @@ class DataBase:
                 user["phone"] = row[3]
         return user
     
+    # 修改用户的基本信息
+    def chuser_info(self, id: str, username: str, car: str, phone: str) -> int:
+        with sqlite3.connect(self.file_path) as con:
+            cur = con.cursor()
+            cur.execute("UPDATE USERS SET name = ? WHERE id = ?;", (username, id))
+            cur.execute("UPDATE USERS SET car = ? WHERE id = ?;", (car, id))
+            cur.execute("UPDATE USERS SET phone = ? WHERE id = ?;", (phone, id))
+
     # 验证用户登录信息
     def check_user(self, id: str, passwd: str) -> int:
         # 从数据库中读取用户信息
