@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, request, render_template, session, redirect, url_for
 from database import db
 
@@ -62,3 +64,19 @@ def logout():
         return "<script> alert('注销成功'); window.location.href='/'; </script>"
     else:
         return '<script>alert("未登录")</script>'
+
+# 车库显示页面
+@app.route('/parking', methods = ['GET', 'POST'])
+def parks():
+    argv = request.args.get('zone', None)
+    if argv == None:
+        if 'userid' in session:
+            user = db.get_user_byID(session['userid'])
+        else:
+            user = {"name": "guest"}
+        return render_template("parking.html", user=user)
+    else:
+        if argv in ['A', 'B', 'C', 'D', 'E', 'F']:
+            return json.dumps(db.get_parks(argv))
+        else:
+            return "未知的区域", 404

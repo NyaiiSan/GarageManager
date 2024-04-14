@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车库信息</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+
+        .tips {
+            display: flex;
+            justify-content: center;
+            
+            margin-bottom: 20px;
+        }
+
+        .tips_box {
+            display: flex;
+            align-items: center;
+
+            margin-top: 10px;
+            margin-bottom: 10px;
+
+            width: 100px;
+        }
+
+        .tips_color {
+            width: 15px;
+            height: 15px;
+
+            border: 2px;
+            border-color: black;
+            border-style: solid;
+
+            margin-right: 5px;
+            
+        }
+
+        .zones {
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+
+        .zone {
+            margin-bottom: 40px;
+            border: 0px;
+            border-top: 2px;
+            border-color: #eeee;
+            border-style: inset;
+
+            padding-top: 20px;
+        }
+
+        .zone_info {
+            text-align: left;
+
+            font-size: 20px;
+
+            margin-bottom: 20px;
+        }
+
+        .parks {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .park {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 80px;
+            height: 120px;
+
+            background-color: green;
+
+            margin: 15px;
+
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="top_label">
+        <div class="top_side">
+            <a class="top_fun" href="/">主页</a>
+            <a class="top_fun" href="/parking">车库状态</a>
+            <a class="top_fun" href="/user">我的信息</a>
+            <a class="top_fun" href="">我的钱包</a>
+        </div>
+        <div class="top_side">
+            {% if user.name == 'guest' %}
+            <a class="top_fun" href="/login">登录</a>
+            <a class="top_fun" href="javascript: alert('请联系管理员完成注册');">注册</a>
+            {% else %}
+            <a class="top_fun" href="/login">{{ user.name }}</a>
+            <a class="top_fun" href="/logout">注销</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="mainBox">
+        <h1 id="title">车位信息</h1>
+        <div class="tips">
+            <div class="tips_box">
+                <div class="tips_color" style="background-color: green;"></div>
+                <div class="tips_text"><p>空闲</p></div>
+            </div>
+            <div class="tips_box">
+                <div class="tips_color" style="background-color: red;" ></div>
+                <div class="tips_text"><p>占用</p></div>
+            </div>
+        </div>
+        <div class="zones">
+    
+        </div>
+    </div>
+
+    <script>
+        // 车位状态加载
+        function get_zone(zoneName){
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/parking?zone=" + zoneName, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if(xhr.status == 200){
+                        zone = {
+                            name: zoneName,
+                            parks: JSON.parse(xhr.responseText)
+                        }
+                        zone_div = create_zone(zone);
+                        document.getElementsByClassName("zones")[0].appendChild(zone_div);
+                    }
+                }
+            }
+
+            xhr.send();
+        }
+        
+        function create_zone(zoneData){
+
+            // <div class="zone_info">
+            //     <h3 class="zone_name">${zone["zoneName"]}区</h3>
+            // </div>
+            // <div class="parks">
+            //     <div class="park"></div>
+            //     <div class="park"></div>
+            //     <div class="park"></div>
+            // </div>
+
+            // 创建一个区域
+            var zone = document.createElement('div'); 
+            zone.className = 'zone';
+            zone.id = 'zone_' + zoneData["name"];
+
+            // 添加区域信息
+            zone_info = document.createElement('div');
+            zone_info.className = 'zone_info';
+            // 添加内容
+            zone_info.innerHTML = `
+                <h3 class="zone_name">${zoneData["name"]}区</h3>
+            `
+            zone.appendChild(zone_info);
+
+            // 添加车位信息
+            parks = document.createElement('div');
+            parks.className = 'parks';
+            for(i=0; i<zoneData["parks"].length; i++){
+                park = document.createElement('div');
+                park.className = 'park';
+                if(zoneData["parks"][i] == 1){
+                    park.style.backgroundColor = 'red';
+                }
+                park.innerHTML = zoneData["name"] + (i+1);
+                parks.appendChild(park);
+            }
+            zone.appendChild(parks);
+
+            return zone;
+        }
+     
+        function update_zone(zoneName){
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/parking?zone=" + zoneName, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if(xhr.status == 200){
+                        parks = JSON.parse(xhr.responseText);
+                        // 获取要更新的zone
+                        zone = document.getElementById('zone_' + zoneName);
+                        if(zone != null){
+                            // 更新车位信息
+                            parks_div = zone.getElementsByClassName('parks')[0];
+                            parks_div.innerHTML = '';
+                            for(i=0; i<parks.length; i++){
+                                park = document.createElement('div');
+                                park.className = 'park';
+                                park.innerHTML = zoneName + (i+1);
+                                if(parks[i] == 1){
+                                    park.style.backgroundColor = 'red';
+                                }
+                                parks_div.appendChild(park);
+                            }
+                        }
+                    }
+                }
+            }
+            xhr.send();
+        }
+
+        get_zone('A');
+        get_zone('B');
+        get_zone('C');
+        get_zone('D');
+
+        // 轮询更新A区域的状态
+        setInterval(function(){
+            update_zone('A');
+        }, 1000);
+
+    </script>
+</body>
+</html>

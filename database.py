@@ -1,5 +1,6 @@
 import sqlite3
 import hashlib
+import random
 
 class DataBase:
 
@@ -9,9 +10,9 @@ class DataBase:
         self.file_path = path
         with sqlite3.connect(path) as con:
             cur = con.cursor()
-            # 删除表
-            cur.execute("DROP TABLE IF EXISTS users;")
-            # 创建用户表
+            # 初始化用户表
+            cur.execute("DROP TABLE IF EXISTS users;") # 删除旧表
+            # 创建新用户表
             cur.execute("""CREATE TABLE IF NOT EXISTS users(
                         id      text    PRIMARY KEY,
                         passwd  text    NOT NULL,
@@ -27,6 +28,32 @@ class DataBase:
             # 添加用户
             cur.execute("INSERT INTO USERS (id, passwd, car, name, phone) VALUES(?, ?, ?, ?, ?);", ("3D985A8C", dpasswd, "A78A54", "沈华强", "13988776655"))
             cur.execute("INSERT INTO USERS (id, passwd, car, name, phone) VALUES(?, ?, ?, ?, ?);", ("334455AA", dpasswd, "D123A5", "彩须坤", "13088226655"))
+
+            # 初始化车位表
+            cur.execute("DROP TABLE IF EXISTS parks;") # 删除旧车位表
+            cur.execute("""CREATE TABLE IF NOT EXISTS parks(
+                        id      text        PRIMARY KEY,
+                        state   boolean     NOT NULL,
+                        zone    text        NOT NULL
+                        );""")
+            
+            # 添加车位
+            # A区
+            for i in range(3):
+                cur.execute("INSERT INTO PARKS (id, state, zone) VALUES(?, ?, ?);", (f"A{i}", False, "A"))
+            # B区
+            for i in range(8):
+                cur.execute("INSERT INTO PARKS (id, state, zone) VALUES(?, ?, ?);", (f"B{i}", random.choice([True, False]), "B"))
+            # C区
+            for i in range(8):
+                cur.execute("INSERT INTO PARKS (id, state, zone) VALUES(?, ?, ?);", (f"C{i}", random.choice([True, False]), "C"))
+            # D区
+            for i in range(8):
+                cur.execute("INSERT INTO PARKS (id, state, zone) VALUES(?, ?, ?);", (f"D{i}", random.choice([True, False]), "D"))
+            # E区
+            for i in range(8):
+                cur.execute("INSERT INTO PARKS (id, state, zone) VALUES(?, ?, ?);", (f"E{i}", random.choice([True, False]), "E"))
+            
 
     def add_user(user: dict) -> bool:
         pass
@@ -73,5 +100,14 @@ class DataBase:
         else:
             return 0
         
+    def get_parks(self, zone: str) -> list[int]:
+        parks = list()
+        with sqlite3.connect(self.file_path) as con:
+            cur = con.cursor()
+            res = cur.execute("SELECT state FROM parks WHERE zone = ?;", (zone,))
+            for row in res:
+                parks += (row[0],)
+        return parks
+
 # 实例化数据库对象
 db = DataBase("data.db")
