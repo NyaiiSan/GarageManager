@@ -82,24 +82,7 @@
     </style>
 </head>
 <body>
-    <div id="top_label">
-        <div class="top_side">
-            <a class="top_fun" href="/">主页</a>
-            <a class="top_fun" href="/parking">车库状态</a>
-            <a class="top_fun" href="/user">我的信息</a>
-            <a class="top_fun" href="">我的钱包</a>
-        </div>
-        <div class="top_side">
-            {% if user.name == 'guest' %}
-            <a class="top_fun" href="/login">登录</a>
-            <a class="top_fun" href="javascript: alert('请联系管理员完成注册');">注册</a>
-            {% else %}
-            <a class="top_fun" href="/login">{{ user.name }}</a>
-            <a class="top_fun" href="/logout">注销</a>
-            {% endif %}
-        </div>
-    </div>
-
+    <script src="/static/js/top_label.js"></script>
     <div id="mainBox">
         <h1 id="title">车位信息</h1>
         <div class="tips">

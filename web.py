@@ -7,15 +7,21 @@ from database import db
 app = Flask('main')
 app.secret_key = '1234567890'
 
+# 用户登录验证
+@app.route('/user/verify', methods = ['POST'])
+def verify():
+    user = {
+        'name': "guest"
+    }
+    if 'userid' in session:
+        user['name'] = db.get_user_byID(session['userid'])['name']
+    
+    return json.dumps(user)
+
 # 主页
 @app.route('/', methods = ['GET'])
 def index():
-    if 'userid' in session:
-        user = db.get_user_byID(session['userid'])
-    else:
-        user = {"name": "guest"}
-
-    return render_template("index.html", user = user)
+    return render_template("index.html")
 
 # 用户个人信息显示页面
 @app.route('/user', methods = ['GET', 'POST'])
@@ -70,13 +76,18 @@ def logout():
 def parks():
     argv = request.args.get('zone', None)
     if argv == None:
-        if 'userid' in session:
-            user = db.get_user_byID(session['userid'])
-        else:
-            user = {"name": "guest"}
-        return render_template("parking.html", user=user)
+        return render_template("parking.html")
     else:
         if argv in ['A', 'B', 'C', 'D', 'E', 'F']:
             return json.dumps(db.get_parks(argv))
         else:
             return "未知的区域", 404
+
+# 用户钱包界面
+@app.route('/wallet', methods = ['GET', 'POST'])
+def wallet():
+    if 'userid' in session:
+        user = db.get_user_byID(session['userid'])
+        return render_template("wallet.html", user=user)
+    else:
+        return "<script> alert('请先登陆'); window.location.href='/login'; </script>"

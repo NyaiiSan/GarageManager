@@ -26,8 +26,8 @@ class DataBase:
             # 用户默认密码
             dpasswd = 'e10adc3949ba59abbe56e057f20f883e'
             # 添加用户
-            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone) VALUES(?, ?, ?, ?, ?);", ("3D985A8C", dpasswd, "A78A54", "沈华强", "13988776655"))
-            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone) VALUES(?, ?, ?, ?, ?);", ("334455AA", dpasswd, "D123A5", "彩须坤", "13088226655"))
+            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet) VALUES(?, ?, ?, ?, ?, ?, ?);", ("3D985A8C", dpasswd, "A78A54", "沈华强", "13988776655", False, random.randint(1000, 9999)/100))
+            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet) VALUES(?, ?, ?, ?, ?, ?, ?);", ("334455AA", dpasswd, "D123A5", "彩须坤", "13088226655", False, random.randint(1000, 9999)/100))
 
             # 初始化车位表
             cur.execute("DROP TABLE IF EXISTS parks;") # 删除旧车位表

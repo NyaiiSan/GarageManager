@@ -128,30 +128,10 @@
     </style>
 </head>
 <body>
+    <script src="/static/js/top_label.js"></script>
     <div id="bg"></div>
-
-    <div id="top_label">
-        <div class="top_side">
-            <a class="top_fun" href="/">主页</a>
-            <a class="top_fun" href="/parking">车库状态</a>
-            <a class="top_fun" href="/user">我的信息</a>
-            <a class="top_fun" href="">我的钱包</a>
-        </div>
-        <div class="top_side">
-            {% if user.name == 'guest' %}
-            <a class="top_fun" href="/login">登录</a>
-            <a class="top_fun" href="javascript: alert('请联系管理员完成注册');">注册</a>
-            {% else %}
-            <a class="top_fun" href="/login">{{ user.name }}</a>
-            <a class="top_fun" href="/logout">注销</a>
-            {% endif %}
-        </div>
-    </div>
-
     <div id="mainBox">
-
         <h1 id="title">智能车库管理系统</h1>
-
         <div class="descriptions">
             <p class="description">
                 智能车库管理系统的设计与实现是为了应对现代城市化进程中车辆管理的复杂性、效率性以及安全性问题。
@@ -163,17 +143,12 @@
                 因此，一个智能车库管理系统显得尤为重要和迫切。
             </p>
         </div>
-
         <div>
             <img id="main-img" src="/static/img/Car.png" alt="">
         </div>
-        
         <hr>
-
         <a id="start_but" href="#">开始体验</a>
-
         <hr>
-
         <div id="features">
             <dev class="feature">
                 <div class="feature_title">
@@ -210,7 +185,6 @@
                 </p>
             </dev>
         </div>
-
     </div>
 </body>
 </html>
