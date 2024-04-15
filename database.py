@@ -26,8 +26,10 @@ class DataBase:
             # 用户默认密码
             dpasswd = 'e10adc3949ba59abbe56e057f20f883e'
             # 添加用户
-            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet) VALUES(?, ?, ?, ?, ?, ?, ?);", ("3D985A8C", dpasswd, "A78A54", "沈华强", "13988776655", False, random.randint(1000, 9999)/100))
-            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet) VALUES(?, ?, ?, ?, ?, ?, ?);", ("334455AA", dpasswd, "D123A5", "彩须坤", "13088226655", False, random.randint(1000, 9999)/100))
+            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet) \
+                            VALUES(?, ?, ?, ?, ?, ?, ?);", ("36606b60", dpasswd, "A78A54", "沈华强", "13988776655", False, random.randint(1000, 9999)/100))
+            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet) \
+                            VALUES(?, ?, ?, ?, ?, ?, ?);", ("e3f6e22e", dpasswd, "D123A5", "彩须坤", "13088226655", False, random.randint(1000, 9999)/100))
 
             # 初始化车位表
             cur.execute("DROP TABLE IF EXISTS parks;") # 删除旧车位表
@@ -75,6 +77,16 @@ class DataBase:
                 user["phone"] = row[3]
         return user
     
+    # 根据id获取一个用户的车牌号
+    def get_car_byID(self, id: str) -> str:
+        car = ""
+        with sqlite3.connect(self.file_path) as con:
+            cur = con.cursor()
+            res = cur.execute("SELECT car FROM users WHERE id = ?;", (id,))
+            for row in res:
+                car = row[0]
+        return car
+
     # 修改用户的基本信息
     def chuser_info(self, id: str, username: str, car: str, phone: str) -> int:
         with sqlite3.connect(self.file_path) as con:
@@ -108,6 +120,13 @@ class DataBase:
             for row in res:
                 parks += (row[0],)
         return parks
+
+    # 更新车位状态
+    def update_park(self, id: str, state: bool) -> int:
+        with sqlite3.connect(self.file_path) as con:
+            cur = con.cursor()
+            cur.execute("UPDATE PARKS SET state = ? WHERE id = ?;", (state, id))
+            return 1
 
 # 实例化数据库对象
 db = DataBase("data.db")
