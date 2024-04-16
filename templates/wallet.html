@@ -5,8 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/info.css">
 </head>
 <body>
     <script src="/static/js/top_label.js"></script>
+    
+    <div id="mainBox">
+        <h1 id="title">我的钱包</h1>
+        <div class="infoBox">
+            <div class="infoLine">
+                <label for="name">卡号：</label>
+                <input class="infoText" type="text" value="{{ wallet.id }}" disabled>
+            </div>
+            <div class="infoLine">
+                <label for="plate">余额：</label>
+                <input class="infoText" type="text" value="{{ wallet.wallet }}" disabled>
+            </div>
+            <div class="infoLine">
+                <label for="contact">停车时长：</label>
+                <input class="infoText" type="text" value="{{ wallet.times }}" disabled>
+            </div>
+            <input type="text" id="state" style="display: none;" value="show">
+            <button id="submit" class="funButton" type="button" onclick="topay()">充值</button>
+        </div>
+    </div>
+    <script>
+        function topay(){
+            window.location.href = "/topup";
+        }
+    </script>
 </body>
 </html>

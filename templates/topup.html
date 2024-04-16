@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>充值</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .amounts {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+
+            margin: 60px auto 30px;
+        }
+
+        .amount label {
+            display: block;
+            width: 100px;
+
+            padding-top: 15px;
+            padding-bottom: 15px;
+            margin: 10px 20px 10px;
+
+            box-shadow: 5px 5px 8px 0px #cccc;
+            border-radius: 10px;
+
+            transition: all 0.5s;
+        }
+
+        .amount input {
+            display: none;
+            width: 100px;
+            height: 30px;
+        }
+
+        input:checked + label {
+            color: #666;
+            background-color: #fc64;
+            box-shadow: 2px 2px 3px 0px #ccc8;
+        }
+
+        #qrcode {
+            width: 200px;
+        }
+
+        button {
+            margin: 40px auto 30px;
+        }
+
+    </style>
+</head>
+<body>
+    <script src="/static/js/top_label.js"></script>
+
+    <div id="mainBox">
+        <h1 id="title">充值中心</h1>
+        <div class="amounts">
+            <div class="amount">
+                <input id="am_10" type="radio" name="amount" value="10">
+                <label for="am_10">10元</label>
+            </div>
+            <div class="amount">
+                <input id="am_20" type="radio" name="amount" value="20">
+                <label for="am_20">20元</label>
+            </div>
+            <div class="amount">
+                <input id="am_50" type="radio" name="amount" value="50">
+                <label for="am_50">50元</label>
+            </div> 
+            <div class="amount">
+                <input id="am_100" type="radio" name="amount" value="100">
+                <label for="am_100">100元</label>
+            </div>
+        </div>
+        <div id="paycode"></div>
+        <button id="but" class="funButton" onclick="ready_pay()">确认</button>
+    </div>
+
+    <script>
+        function get_amount(){
+            var am = document.getElementsByName("amount");
+            for(var i = 0; i < am.length; i++){
+                if(am[i].checked){
+                    return am[i].value;
+                }
+            }
+        }
+
+        function ready_pay(){
+            amount = get_amount();
+            if(amount == undefined){
+                alert("请选择充值金额");
+            }
+            else{
+                var am = document.getElementsByName("amount");
+                for(var i = 0; i < am.length; i++){
+                    am[i].setAttribute('disabled', "");
+                }
+                to_pay(amount);
+            }
+        }
+
+        function to_pay(amount){
+            var qrcode = document.createElement('img');
+            qrcode.id = "qrcode";
+            qrcode.src = "/static/img/QRcode.png";
+
+            var amount_text = document.createElement('h3');
+            amount_text.innerHTML = "支付：" + amount + "元";
+            amount_text.style.margin = "20px auto 20px";
+
+            paycode = document.getElementById("paycode");
+            // 在paycode中添加二维码图片
+            paycode.appendChild(amount_text);
+            paycode.appendChild(qrcode);
+
+            but = document.getElementById("but");
+            but.innerHTML = "已支付";
+            but.setAttribute('onclick', "topup()");
+        }
+
+        function topup(){
+            // 向服务端发送充值信息
+            var url = "/topup";
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if(xhr.status == 200){
+                        alert(xhr.responseText);
+                        window.location.href = "/wallet";
+                   }
+                   else{
+                        alert(xhr.responseText);
+                    }
+                }
+            };
+            // XHMSend
+            var data = JSON.stringify({
+                "amount": amount
+            });
+            xhr.send(data);
+        }
+    </script>
+</body>
+</html>

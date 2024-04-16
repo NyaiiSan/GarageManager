@@ -2,88 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人信息</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <style>
-
-        .edit-form {
-            max-width: 600px;
-
-            margin: 60px auto 60px;
-            padding-left: 50px;
-            padding-right: 50px;
-
-            border: 2px solid;
-            border-radius: 10px;
-        }
-
-        .infoLine {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            margin: 20px auto 20px;
-            
-            padding-top: 20px;
-            padding-bottom: 20px;
-
-        }
-
-        .infoText{
-            width: 300px;
-            height: 30px;
-
-            text-align: center;
-
-            margin-left: 50px;
-            padding: 5px;
-
-            border: 2px solid;
-            border-radius: 10px;
-        }
-
-        .infoText:focus{
-            /* border: none; */
-            outline: none;
-            background-color: #ccc;
-        }
-
-        .infoText:disabled{
-            /* background-color: #999; */
-            border-color: white;
-            background-color: #fff;
-            box-shadow: 1px 1px 2px 1px #aaaa;
-        }
-
-        #submit {
-            margin-top: 30px;
-            margin-bottom: 30px;
-        }
-
-    </style>
+    <link rel="stylesheet" href="/static/css/info.css">
 </head>
 <body>
+    <script src="/static/js/top_label.js"></script>
+
     <div id="mainBox">
-        <script src="/static/js/top_label.js"></script>
         <h1 id="title">个人信息</h1>
-        <div class="edit-form">
-            <form style="width: 100%;">
-                <div class="infoLine">
-                    <label for="name">姓名：</label>
-                    <input class="infoText" type="text" id="name" name="name" value="{{ user.name }}" disabled>
-                </div>
-                <div class="infoLine">
-                    <label for="plate">车牌号：</label>
-                    <input class="infoText" type="text" id="plate" name="plate" value="{{ user.car }}" disabled>
-                </div>
-                <div class="infoLine">
-                    <label for="contact">联系方式：</label>
-                    <input class="infoText" type="text" id="phonenum" name="phonenum" value="{{ user.phone }}" disabled>
-                </div>
-                <input type="text" id="state" style="display: none;" value="show">
-                <button id="submit" type="button" onclick="editInfo()">更改</button>
-            </form>
+        <div class="infoBox">
+            <div class="infoLine">
+                <label for="name">姓名：</label>
+                <input class="infoText" type="text" id="name" name="name" value="{{ user.name }}" disabled>
+            </div>
+            <div class="infoLine">
+                <label for="plate">车牌号：</label>
+                <input class="infoText" type="text" id="plate" name="plate" value="{{ user.car }}" disabled>
+            </div>
+            <div class="infoLine">
+                <label for="contact">联系方式：</label>
+                <input class="infoText" type="text" id="phonenum" name="phonenum" value="{{ user.phone }}" disabled>
+            </div>
+            <input type="text" id="state" style="display: none;" value="show">
+            <button id="submit" class="funButton" type="button" onclick="editInfo()">更改</button>
         </div>
     </div>
     <script>

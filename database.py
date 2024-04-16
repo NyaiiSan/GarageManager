@@ -20,16 +20,17 @@ class DataBase:
                         name    text    NOT NULL,
                         phone   text    NOT NULL,
                         state   boolean,
-                        wallet  float
+                        wallet  float,
+                        times   int
                         );""")
             
             # 用户默认密码
             dpasswd = 'e10adc3949ba59abbe56e057f20f883e'
             # 添加用户
-            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet) \
-                            VALUES(?, ?, ?, ?, ?, ?, ?);", ("36606b60", dpasswd, "A78A54", "沈华强", "13988776655", False, random.randint(1000, 9999)/100))
-            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet) \
-                            VALUES(?, ?, ?, ?, ?, ?, ?);", ("e3f6e22e", dpasswd, "D123A5", "彩须坤", "13088226655", False, random.randint(1000, 9999)/100))
+            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet, times) \
+                            VALUES(?, ?, ?, ?, ?, ?, ?, ?);", ("36606b60", dpasswd, "A78A54", "沈华强", "13988776655", False, random.randint(1000, 9999)/100, -1))
+            cur.execute("INSERT INTO USERS (id, passwd, car, name, phone, state, wallet, times) \
+                            VALUES(?, ?, ?, ?, ?, ?, ?, ?);", ("e3f6e22e", dpasswd, "D123A5", "彩须坤", "13088226655", False, random.randint(1000, 9999)/100, -1))
 
             # 初始化车位表
             cur.execute("DROP TABLE IF EXISTS parks;") # 删除旧车位表
@@ -110,6 +111,29 @@ class DataBase:
         elif result[0] == hashlib.md5(passwd.encode("utf-8")).hexdigest():
             return 1
         else:
+            return 0
+    
+    # 获取用户钱包状态
+    def get_user_wallet(self, userid: str) -> dict:
+        wallet = dict()
+        wallet['id'] = userid
+        with sqlite3.connect(self.file_path) as con:
+            cur = con.cursor()
+            res = cur.execute("SELECT wallet, times FROM users WHERE id = ?;", (userid,))
+            for row in res:
+                wallet['wallet'] = row[0]
+                wallet['times'] = row[1]
+        return wallet
+    
+    # 用户充值
+    def topup(self, userid, amount):
+        try:
+            with sqlite3.connect(self.file_path) as con:
+                cur = con.cursor()
+                cur.execute("UPDATE USERS SET wallet = wallet + ? WHERE id = ?;", (amount, userid))
+            return 1
+        except Exception as e:
+            print(e)
             return 0
         
     def get_parks(self, zone: str) -> list[int]:

@@ -25,10 +25,13 @@ button{
     background-color: #fff;
 
     box-shadow: 3px 3px 5px 1px #cccccc;
+    
+    transition: all 0.5s;
 }
 
 button:hover{
-    background-color: #eee;
+    background-color: #ddd;
+    box-shadow: 1px 1px 2px 1px #cccccc;
 }
 
 #top_label{
@@ -73,11 +76,12 @@ button:hover{
     border-radius: 10px;
 
     transition:
-        background-color 0.5s;
+        all 0.5s;
 }
 
 .top_fun:hover{
-    background-color: #aaa;
+    background-color: #ddd;
+    box-shadow: 1px 1px 2px 0px #cccc;
 }
 
 #mainBox{

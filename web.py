@@ -87,7 +87,23 @@ def parks():
 @app.route('/wallet', methods = ['GET', 'POST'])
 def wallet():
     if 'userid' in session:
-        user = db.get_user_byID(session['userid'])
-        return render_template("wallet.html", user=user)
+        wallet_info = db.get_user_wallet(session['userid'])
+        if wallet_info['times'] == -1:
+            wallet_info['times'] = "未使用"
+        return render_template("wallet.html", wallet = wallet_info)
+    else:
+        return "<script> alert('请先登陆'); window.location.href='/login'; </script>"
+
+# 充值界面
+@app.route('/topup', methods = ['GET', 'POST'])
+def topup():
+    if 'userid' in session:
+        if request.method == "GET":
+            return render_template("topup.html")
+        else:
+            if db.topup(session['userid'], request.json['amount']):
+                return "充值成功", 200
+            else:
+                return "充值失败", 400
     else:
         return "<script> alert('请先登陆'); window.location.href='/login'; </script>"

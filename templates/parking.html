@@ -70,7 +70,7 @@
             width: 80px;
             height: 120px;
 
-            background-color: green;
+            background-color: #6fc;
 
             margin: 15px;
 
@@ -84,11 +84,11 @@
         <h1 id="title">车位信息</h1>
         <div class="tips">
             <div class="tips_box">
-                <div class="tips_color" style="background-color: green;"></div>
+                <div class="tips_color" style="background-color: #6fc;"></div>
                 <div class="tips_text"><p>空闲</p></div>
             </div>
             <div class="tips_box">
-                <div class="tips_color" style="background-color: red;" ></div>
+                <div class="tips_color" style="background-color: #fc6;" ></div>
                 <div class="tips_text"><p>占用</p></div>
             </div>
         </div>
@@ -150,7 +150,7 @@
                 park = document.createElement('div');
                 park.className = 'park';
                 if(zoneData["parks"][i] == 1){
-                    park.style.backgroundColor = 'red';
+                    park.style.backgroundColor = '#fc6';
                 }
                 park.innerHTML = zoneData["name"] + (i+1);
                 parks.appendChild(park);
@@ -178,7 +178,7 @@
                                 park.className = 'park';
                                 park.innerHTML = zoneName + (i+1);
                                 if(parks[i] == 1){
-                                    park.style.backgroundColor = 'red';
+                                    park.style.backgroundColor = '#fc6';
                                 }
                                 parks_div.appendChild(park);
                             }
