@@ -1,6 +1,5 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
-#include <Ticker.h> 
 
 #include <U8g2lib.h>
 #include <Wire.h>
@@ -13,7 +12,7 @@
 #define PASSWD  "SGXY666666"
 
 // Socket
-#define SERVER "192.168.1.153"
+#define SERVER "192.168.1.168"
 #define PORT 8777
 
 // RFID
@@ -25,12 +24,6 @@ MFRC522::MIFARE_Key key;
 
 // OLED
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ SCL, /* data=*/ SDA, /* reset=*/ U8X8_PIN_NONE); // All Boards without Reset of the Display
-
-// Timer
-Ticker timer1;
-
-// tcp Client
-WiFiClient client;
 
 // ioInfo
 char pin_state[5];
@@ -85,29 +78,6 @@ void io_scan(){
   pin_state[2] = digitalRead(D9);
 }
 
-// 初始化定时器
-void timer_init(){
-  timer1.attach(1, timer_cb);
-}
-
-// 同步传感器信息
-void timer_cb(){
-  char io_data[16];
-  char dp = 0;
-  io_data[dp++] = 0x0c;
-  // 获取传感器数据
-  // 更新IO口数据
-  io_scan();
-  for(int i=0; i<3; i++){
-    io_data[dp++] = pin_state[i] ? '0' : '1';
-  }
-  io_data[dp++] = 0x0c;
-  io_data[dp++] = '\0';
-  if(client.connected()){
-    client.print(io_data);
-  }
-}
-
 // 扫描卡片ID
 int scanCard(unsigned int *id){
   if ( ! rfid.PICC_IsNewCardPresent()){
@@ -141,31 +111,27 @@ WiFiClient tcpInit(){
   WiFiClient client;
   if (client.connect(SERVER, PORT))//连接的IP地址和
   {
-    client.setTimeout(100);
-  }
-  else{
-    
+    client.setTimeout(500);
   }
   return client;
 }
 
 // 在屏幕上显示一个字符串
-void showStr(String str){
+void showStr(String str, int line){
   char buf[64];
+  int y = 16 * line;
   strcpy(buf, str.c_str());
-  // 清空显示区域内容
-  u8g2.setDrawColor(0);
-  u8g2.drawBox(0, 17, 128, 48);
-  u8g2.setDrawColor(1);
-
-  // 分割字符串
-  char *p = strtok(buf, "\n");
-  int i = 0;
-  while(p != NULL){
-    u8g2.drawStr(0,32+i*16,p);
-    p = strtok(NULL, "\n");
-    i++;
+  char *p = buf, *q = buf;
+  while(*p != '\0'){
+    if(*p == '\n'){
+      *p = '\0';
+      u8g2.drawStr(0, y, q);
+      y += 16;
+      q = p + 1;
+    }
+    p++;
   }
+  u8g2.drawStr(0, y, q);
   u8g2.sendBuffer(); // 将缓存输出到屏幕
 }
 
@@ -173,20 +139,18 @@ void setup() {
   oled_init();
   wifi_init();
  	rfid_init();
-  timer_init();
   gpio_init();
 }
 
 void loop() {
-  // 连接服务器
-  client = tcpInit();
+
+  WiFiClient client = tcpInit();
+
   while(client.connected()){
     // 设置本次循环延迟时间
-    unsigned long dt = 500;
+    unsigned long dt = 800;
     // 清空显示
     u8g2.clearBuffer();
-    
-    
 
     // 显示IO口状态
     char io_str[4] = {0};
@@ -199,15 +163,23 @@ void loop() {
     unsigned int id;
     char *p = (char *)&id;
     int scan_res = scanCard(&id);
-    if(scan_res == 0){ // 如果读卡成功
 
-      // 显示卡片ID
-      char id_str[16] = {0};
-      for(int i=0; i<4; i++){
-        sprintf(id_str+(i*3), "%02x ", *(p+i));
-      }
-      
-      // 生成数据包
+    // 发送传感器shuju
+    char io_data[16];
+    char dp = 0;
+    io_data[dp++] = 0x0c;
+    // 获取传感器数据
+    // 更新IO口数据
+    io_scan();
+    for(int i=0; i<3; i++){
+      io_data[dp++] = pin_state[i] ? '0' : '1';
+    }
+    io_data[dp++] = 0x0c;
+    io_data[dp++] = '\0';
+    client.print(io_data);
+
+    if(scan_res == 0){ // 如果读卡成功      
+      // 生成卡号数据包
       char data[16];
       char dp = 0;
       data[dp++] = 0xc0;
@@ -219,21 +191,22 @@ void loop() {
       data[dp++] = '\0';
 
       // 向服务器发送
-      if(client.connected()){
-        client.print(data);
-        // 接收车辆信息并显示
-        char recv[16] = {0};
-        strcpy(recv, client.readString().c_str()); 
-        u8g2.drawStr(0, 32, recv);
-        dt = 3000;
+      // 连接服务器
+      client.print(data);
+      // 接收车辆信息并显示
+      String recvStr = client.readString();
+      while(recvStr.length() == 0){
+        recvStr = client.readString();
       }
+      client.print("get: " + recvStr);
+      showStr(recvStr, 2);
+      dt = 2000;
     }
-
     // 刷新屏幕
     u8g2.sendBuffer();
-
     // 延时
     delay(dt);
+
   }
 
   u8g2.clearBuffer();

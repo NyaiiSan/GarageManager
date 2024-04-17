@@ -1,6 +1,7 @@
 import sqlite3
 import hashlib
 import random
+import time
 
 class DataBase:
 
@@ -78,15 +79,36 @@ class DataBase:
                 user["phone"] = row[3]
         return user
     
-    # 根据id获取一个用户的车牌号
-    def get_car_byID(self, id: str) -> str:
-        car = ""
+    # 根据id获取一个用户的车辆信息
+    def get_car_byID(self, userid: str) -> dict:
+        car_info = {
+            'car': None,
+            'state': None,
+            'times': None
+        }
         with sqlite3.connect(self.file_path) as con:
             cur = con.cursor()
-            res = cur.execute("SELECT car FROM users WHERE id = ?;", (id,))
+            res = cur.execute("SELECT car, state, times FROM users WHERE id = ?;", (userid,))
             for row in res:
-                car = row[0]
-        return car
+                car_info["car"] = row[0]
+                car_info["state"] = row[1]
+                car_info["times"] = row[2]
+        return car_info
+
+    # 车辆入库
+    def car_in(self, userid: str):
+        with sqlite3.connect(self.file_path) as con:
+            cur = con.cursor()
+            # 设置车辆状态
+            cur.execute("UPDATE users SET state = ? WHERE id = ?;", (True, userid))
+            cur.execute("UPDATE users SET times = ? WHERE id = ?;", (int(time.time()), userid))
+    # 车辆出库
+    def car_out(self, userid: str):
+        with sqlite3.connect(self.file_path) as con:
+            cur = con.cursor()
+            # 设置车辆状态
+            cur.execute("UPDATE users SET state = ? WHERE id = ?;", (False, userid))
+            cur.execute("UPDATE users SET times = ? WHERE id = ?;", (-1, userid))
 
     # 修改用户的基本信息
     def chuser_info(self, id: str, username: str, car: str, phone: str) -> int:
@@ -136,6 +158,18 @@ class DataBase:
             print(e)
             return 0
         
+
+    # 用户扣费
+    def spend(self, userid, amount: float):
+        try:
+            with sqlite3.connect(self.file_path) as con:
+                cur = con.cursor()
+                cur.execute("UPDATE USERS SET wallet = wallet - ? WHERE id = ?;", (amount, userid))
+            return 1
+        except Exception as e:
+            print(e)
+            return 0
+
     def get_parks(self, zone: str) -> list[int]:
         parks = list()
         with sqlite3.connect(self.file_path) as con:

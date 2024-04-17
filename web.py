@@ -1,4 +1,5 @@
 import json
+import time
 
 from flask import Flask, request, render_template, session, redirect, url_for
 from database import db
@@ -88,8 +89,12 @@ def parks():
 def wallet():
     if 'userid' in session:
         wallet_info = db.get_user_wallet(session['userid'])
+        wallet_info['wallet'] = "%.2f"%wallet_info['wallet']
         if wallet_info['times'] == -1:
             wallet_info['times'] = "未使用"
+        else:
+            parked_time = int(time.time()) - wallet_info['times']
+            wallet_info['times'] = "%d %s"%(parked_time, 's')
         return render_template("wallet.html", wallet = wallet_info)
     else:
         return "<script> alert('请先登陆'); window.location.href='/login'; </script>"
