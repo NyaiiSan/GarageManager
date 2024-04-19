@@ -12,7 +12,7 @@
 #define PASSWD  "SGXY666666"
 
 // Socket
-#define SERVER "192.168.1.168"
+#define SERVER "192.168.1.190"
 #define PORT 8777
 
 // RFID
@@ -26,7 +26,7 @@ MFRC522::MIFARE_Key key;
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ SCL, /* data=*/ SDA, /* reset=*/ U8X8_PIN_NONE); // All Boards without Reset of the Display
 
 // ioInfo
-char pin_state[5];
+char pin_state[6];
 
 void wifi_init(){
   u8g2.drawStr(0,14,"Waiting WiFi..."); // 设置坐标 x=0，y=20 输出内容，0表示最左端
@@ -64,18 +64,20 @@ void oled_init(){
 // 初始化GPIO
 void gpio_init(){
   pinMode(D3, INPUT);
+  pinMode(D4, INPUT);
   pinMode(D9, INPUT);
   pinMode(D10, INPUT);
-  for(int i=0; i<5; i++){
+  for(int i=0; i<6; i++){
     pin_state[i] = 0;
   }
 }
 
 // 扫描GPIO口
 void io_scan(){
-  pin_state[0] = digitalRead(D3);
+  pin_state[0] = digitalRead(D9);
   pin_state[1] = digitalRead(D10);
-  pin_state[2] = digitalRead(D9);
+  pin_state[2] = digitalRead(D3);
+  pin_state[3] = digitalRead(D4);
 }
 
 // 扫描卡片ID
@@ -152,26 +154,30 @@ void loop() {
     // 清空显示
     u8g2.clearBuffer();
 
-    // 显示IO口状态
-    char io_str[4] = {0};
-    for(int i=0; i<3; i++){
-      io_str[i] = pin_state[i] ? '0' : '1';
+    // 显示车位数量
+    char num = 0;
+    for(int i=0; i<4; i++){
+      if(pin_state[i] == 0){
+        num++;
+      }
     }
-    u8g2.drawStr(0, 64, io_str);
+    char showPark[16];
+    sprintf(showPark, "Zone A : %d/4", num);
+    showStr(showPark, 1);
 
     // 尝试读取卡片
     unsigned int id;
     char *p = (char *)&id;
     int scan_res = scanCard(&id);
 
-    // 发送传感器shuju
+    // 发送传感器数据
     char io_data[16];
     char dp = 0;
     io_data[dp++] = 0x0c;
     // 获取传感器数据
     // 更新IO口数据
     io_scan();
-    for(int i=0; i<3; i++){
+    for(int i=0; i<4; i++){
       io_data[dp++] = pin_state[i] ? '0' : '1';
     }
     io_data[dp++] = 0x0c;
@@ -206,7 +212,6 @@ void loop() {
     u8g2.sendBuffer();
     // 延时
     delay(dt);
-
   }
 
   u8g2.clearBuffer();

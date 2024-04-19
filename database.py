@@ -43,7 +43,7 @@ class DataBase:
             
             # 添加车位
             # A区
-            for i in range(3):
+            for i in range(4):
                 cur.execute("INSERT INTO PARKS (id, state, zone) VALUES(?, ?, ?);", (f"A{i}", False, "A"))
             # B区
             for i in range(8):
